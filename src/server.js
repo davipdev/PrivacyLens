@@ -1,7 +1,6 @@
 import Fastify from "fastify"
 import jwt from "jsonwebtoken"
 import "dotenv/config"
-import bcrypt from "bcryptjs"
 
 const fastify = Fastify({
     logger: true
@@ -40,12 +39,8 @@ fastify.post("/getage", {
        }
         if (idade >=18) {
 
-            const salt = await bcrypt.genSalt(10)
-            const crypto = await bcrypt.hash(data, salt)
-
             const token = jwt.sign(
-            {id: 1, maior: true,
-                datacrypto: crypto
+            {id: 1, maior: true
             },
             process.env.JWT_TOKEN,
             {expiresIn: "10m"}
