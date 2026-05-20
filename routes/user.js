@@ -19,12 +19,12 @@ fastify.post("/getage", {
        const niver = new Date(data)
        const hoje = new Date()
 
-       let idade = hoje.getFullYear() - niver.getFullYear()
+       let idade = hoje.getFullYear() - niver.getUTCFullYear()
 
        if (
-        hoje.getMonth() < niver.getMonth() || (
-            hoje.getMonth() === niver.getMonth() &&
-            hoje.getDate() < niver.getDate()
+        hoje.getMonth() < niver.getUTCMonth() || (
+            hoje.getMonth() === niver.getUTCMonth() &&
+            hoje.getDate() < niver.getUTCDate()
         )
        )
        {
@@ -33,15 +33,15 @@ fastify.post("/getage", {
         if (idade >=18) {
 
             const token = jwt.sign(
-            {id: 1, maior: true
+            {maior: true
             },
             process.env.JWT_TOKEN,
             {expiresIn: "10m"}
         )
-        return reply.status(200).send({success: true, idade, token})
+        return reply.status(200).send({success: true, token})
        }
        if (idade <18) {
-        return reply.status(200).send({error: false, idade})
+        return reply.status(403).send({success: false})
        }
 })
 
