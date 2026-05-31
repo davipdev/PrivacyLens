@@ -1,50 +1,82 @@
 import jwt from "jsonwebtoken"
 import {verificar} from "../middlewares/user.js"
 
+const regras = {
+    adulto: {
+        nessesario: ["data_nascimento", "dados_tecnicos_basicos"],
+        talvez: ["cartão_credito", "nome/usuario", "pais", "idioma", "recomendaçoes", "fuso_horario"],
+        abusivo: ["endereço", "nome_mãe", "cpf", "rg", "biometria_facial"]
+    },
+    ecommerce: {
+        nessesario: ["email", "senha(caso-haja-conta", "nome", "endereço_de_entrega", "telefone", "dados_de_pagementos", "logs_acesso", "IP"],
+        talvez: ["cpf", "data_nascimento", "localização_aproximada", "historico_de_compras"],
+        abusivo: ["cpf_para_navegaçao", "profissão", "renda_mensal", "acesso_a_camera", "nome_da_mãe"]
+    }
+}
+
 export default async function (fastify, options) {
 
-fastify.post("/getage", {
+fastify.post("/avaliar", {
     schema: {
         body: {
             type: "object",
-            required: ["data"],
+            required: ["servico", "dados_solicitados"],
             properties: {
-                data: {type: "string", format: "date" }
+                servico: {type: "string"},
+                dados_solicitados: {
+                    type: "array",
+                    items: {type: "string"}
+                }
             }
         }
     }
 }, async function (request , reply) {
-       const { data } = request.body
+       const { servico, dados_solicitados } = request.body
 
-       const niver = new Date(data)
-       const hoje = new Date()
+       const regra = regras[servico.toLowerCase()]
 
-       let idade = hoje.getFullYear() - niver.getUTCFullYear()
-
-       if (
-        hoje.getMonth() < niver.getUTCMonth() || (
-            hoje.getMonth() === niver.getUTCMonth() &&
-            hoje.getDate() < niver.getUTCDate()
-        )
-       )
-       {
-        idade--
+       if (!regra) {
+        return reply.status(400).send({
+            success: false,
+            error: "servico invalido ou inexistente, use adulto ou ecommerce."
+        })
        }
-        if (idade >=18) {
 
-            const token = jwt.sign(
-            {maior: true
-            },
-            process.env.JWT_TOKEN,
-            {expiresIn: "10m"}
-        )
-        return reply.status(200).send({success: true, token})
-       }
-       if (idade <18) {
-        return reply.status(403).send({success: false})
-       }
-})
+       let nessesario = []
+       let talvez = []
+       let abusivo = []
 
+       for (const dado of dados_solicitados) {
+
+        if(regra.nessesario.includes(dado)) {
+            nessesario.push(dado)
+        } else if (regra.talvez.includes(dado)) {
+            talvez.push(dado)
+        } else {
+            abusivo.push(dado)
+        }
+    }
+      
+        let resultadoFiltrado = {}
+
+        if (nessesario.length > 0) {
+            resultadoFiltrado.nessesario = nessesario
+        }
+        
+        if (talvez.length > 0) {
+            resultadoFiltrado.talvez = talvez
+        }
+        
+        if (abusivo.length > 0) {
+            resultadoFiltrado.abusivo = abusivo
+        }
+
+        return reply.status(200).send({
+            success: true,
+            resultado: resultadoFiltrado
+        })
+    })
+        
 fastify.get("/protect", {preHandler: [verificar]}, async function(request, reply) {
 
     const usuario = request.user
