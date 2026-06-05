@@ -11,91 +11,43 @@ const regras = {
         nessesario: ["email", "senha(caso-haja-conta)", "nome", "endereço_de_entrega", "telefone", "dados_de_pagementos", "logs_acesso", "IP"],
         talvez: ["cpf", "data_nascimento", "localização_aproximada", "historico_de_compras"],
         abusivo: ["cpf_para_navegaçao", "profissão", "renda_mensal", "acesso_a_camera", "nome_da_mãe"]
+    },
+    utilitarios: {
+        nessesario: ["dados_tecnicos_basicos", "IP"],
+        talvez: ["email", "nome"],
+        abusivo: ["localização_aproximada", "cpf", "nome_da_mãe"]
+    },
+    desconhecido: {
+        nessesario: ["dados_tecnicos_basicos"],
+        talvez: ["email"],
+        abusivo: ["cpf", "rg", "biometria_facial", "nome_da_mãe"]
     }
 }
 
 const historicoConsultas = []
 
 function identificarCat(url) {
+    if (!url || typeof url !== 'string') {
+        return "desconhecido"
+    }
+
     const urlLower = url.toLowerCase()
-    const palavrasEcommerce = [
-    "shop",
-    "store",
-    "loja",
-    "marketplace",
-    "market",
-    "ecommerce",
-    "commerce",
-    "buy",
-    "cart",
-    "checkout",
-    "order",
-    "orders",
-    "purchase",
-    "purchases",
-    "sales",
-    "deals",
-    "offers",
-    "product",
-    "products",
-    "catalog",
-    "collection",
-    "collections",
-    "category",
-    "categories",
-    "item",
-    "items",
-    "inventory",
-    "payment",
-    "payments",
-    "billing",
-    "invoice",
-    "invoices",
-    "shipping",
-    "delivery",
-    "shipment",
-    "coupon",
-    "coupons",
-    "discount",
-    "discounts",
-    "voucher",
-    "vouchers",
-    "seller",
-    "vendor",
-    "merchant"
-]
 
-if (palavrasEcommerce.some(palavra => urlLower.includes(palavra))) {
-    return "ecommerce"
+const palavrasEcommerce = ["shop", "store", "loja", "marketplace", "market", "ecommerce", "commerce", "buy", "cart", "checkout", "order", "orders", "purchase", "purchases", "sales", "deals", "offers", "product", "products", "catalog", "collection", "collections", "category", "categories", "item", "items", "inventory", "payment", "payments", "billing", "invoice", "invoices", "shipping", "delivery", "shipment", "coupon", "coupons", "discount", "discounts", "voucher", "vouchers", "seller", "vendor", "merchant"]
+    if (palavrasEcommerce.some(palavra => urlLower.includes(palavra))) {
+        return "ecommerce"
+    }
+    
+    const palavrasAdulto = ["adult", "porn", "xxx", "sex", "cam", "cams", "tube", "escort", "fetish", "nsfw", "18plus", "18+", "hot", "erotic", "nude", "nudes", "webcam", "livecam", "mature"]
+    if (palavrasAdulto.some(palavra => urlLower.includes(palavra))) {
+        return "adulto"
+    }
+    
+    const palavrasServico = ["service", "services", "tool", "tools", "utility", "utilities", "app", "dashboard", "panel", "platform", "portal", "system", "manager", "management", "api", "cloud", "hosting", "storage", "analytics", "monitor", "tracking", "workspace", "suite", "solutions", "software", "saas", "automation", "generator", "converter", "calculator"]
+    if (palavrasServico.some(palavra => urlLower.includes(palavra))) {
+        return "utilitarios"
+    } return "desconhecido"
 }
-const palavrasAdulto = [
-    "adult",
-    "porn",
-    "xxx",
-    "sex",
-    "cam",
-    "cams",
-    "tube",
-    "escort",
-    "fetish",
-    "nsfw",
-    "18plus",
-    "18+",
-    "hot",
-    "erotic",
-    "nude",
-    "nudes",
-    "webcam",
-    "livecam",
-    "mature"
-]
-
-if (palavrasAdulto.some(palavra => urlLower.includes(palavra))) {
-    return "adulto"
-} 
-return "ultilitarios"
-}
-
 export default async function (fastify, options) {
 
 fastify.post("/avaliar", {
@@ -118,13 +70,20 @@ fastify.post("/avaliar", {
        const servico = identificarCat(url)
        const regra = regras[servico]
 
+
+console.log({
+    servico,
+    url,
+    regra
+})
+
        if (!regra) {
         return reply.status(400).send({
             success: false,
-            error: "servico invalido ou inexistente, use adulto ou ecommerce."
+            error: "URL errada ou inexistente."
         })
        }
-
+       
        let nessesario = []
        let talvez = []
        let abusivo = []
