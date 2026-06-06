@@ -66,3 +66,34 @@
             resultado: resultadoFiltrado
         })
     }
+    export async function dashboard(request, reply) {
+        const totalconsultas = historicoConsultas.length
+
+        const somascore = historicoConsultas.reduce((acumulado, consultaAtual) => acumulado + consultaAtual.scoresite, 0 )
+        const scoregeral = totalconsultas > 0 ? Math.round(somascore / totalconsultas) : 100
+
+        const criticos = historicoConsultas.filter(consultaAtual => consultaAtual.nivel === "critico").length
+        const altos = historicoConsultas.filter(consultaAtual => consultaAtual.nivel === "alto").length
+        const medios = historicoConsultas.filter(consultaAtual => consultaAtual.nivel === "medio").length
+        const baixos = historicoConsultas.filter(consultaAtual => consultaAtual.nivel === "baixo").length
+
+        const sitessuspeitos = historicoConsultas.filter(consultaAtual => consultaAtual.scoresite < 70).map(consultaAtual => consultaAtual.url_site)
+
+        const admin = request.user?.nome || "administrador"
+
+        return reply.status(200).send({
+            success: true,
+            mensagem: `painel de admin ${admin}`,
+            scoreGeral: scoregeral,
+            metrica: {
+                total: totalconsultas,
+                alertasCriticos: criticos,
+                alertasAltos: altos,
+                alertasMedios: medios,
+                alertasBaixos: baixos
+            },
+            ranking: [...new Set(sitessuspeitos)],
+            logs: historicoConsultas
+        })
+        }   
+

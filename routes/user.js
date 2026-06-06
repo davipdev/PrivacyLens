@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken"
 import {verificar} from "../middlewares/user.js"
-import { avaliarURL } from "../src/controller/avaliarController.js"
+import { avaliarURL, dashboard } from "../src/controller/avaliarController.js"
 
 export default async function (fastify, options) {
 
@@ -20,12 +20,5 @@ fastify.post("/avaliar", {
     }
 }, avaliarURL)
     
-        
-fastify.get("/protect", {preHandler: [verificar]}, async function(request, reply) {
-
-    const usuario = request.user
-    
-    return reply.status(200).send({resposta: "bem vindo!"})
-
-})
+fastify.get("/admin/dashboard", { preHandler: [verificar] }, dashboard)
 }
