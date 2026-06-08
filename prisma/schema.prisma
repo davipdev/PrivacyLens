@@ -1,0 +1,25 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model usuario {
+  id Int @id @default(autoincrement())
+  nome String 
+  email String   @unique
+  senha String 
+  role String   @default("user")
+  createdAt DateTime @default(now())
+}
+
+model historicoConsultas {
+  id Int @id @default(autoincrement())
+  urlsite String
+  categoria String
+  scoresite Int
+  nivel Int
+  datahora DateTime @default(now())
+}
