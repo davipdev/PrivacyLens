@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken"
 
-export function verificar(request, reply, done) {
+export async function verificar(request, reply) {
     try {
-        /*const authHeader = request.headers.authorization
+        const authHeader = request.headers.authorization
 
         if (!authHeader) {
             return reply.status(401).send({erro: "token nao fornecido"})
@@ -13,18 +13,12 @@ export function verificar(request, reply, done) {
         }
         
         const token = parts[1]
-
-        const decod = jwt.verify(token , process.env.JWT_TOKEN)
+        console.log("token extraido", token)
+        const decod = jwt.verify(token , process.env.JWT_SECRET)
 
         request.user = decod
-        */
 
-        request.user = {
-            id:1,
-            nome: "Davi",
-            role: "admin"
-        }
-        done()
+        return 
 
     } catch (err) {
 

@@ -15,11 +15,18 @@ model usuario {
   createdAt DateTime @default(now())
 }
 
+enum NivelRisco {
+  baixo
+  medio
+  alto
+  critico
+}
+
 model historicoConsultas {
   id Int @id @default(autoincrement())
   urlsite String
   categoria String
   scoresite Int
-  nivel Int
+  nivel NivelRisco
   datahora DateTime @default(now())
 }

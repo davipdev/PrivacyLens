@@ -1,5 +1,6 @@
     import { regras } from "../regras/regrasPrivacidade.js"
     import { identificarCat } from "../utils/urlservico.js"
+    import prisma from "../database/prisma.js"
     
     const historicoConsultas = []
     
@@ -47,7 +48,7 @@
 
      historicoConsultas.push ({
         id: historicoConsultas.length + 1,
-        url_site: url,
+        urlsite: url,
         categoria: servico,
         scoresite: score,
         nivel: nivelrisco,
@@ -67,6 +68,9 @@
         })
     }
     export async function dashboard(request, reply) {
+        
+        const historicoConsultas = await prisma.historicoConsultas.findMany()
+
         const totalconsultas = historicoConsultas.length
 
         const somascore = historicoConsultas.reduce((acumulado, consultaAtual) => acumulado + consultaAtual.scoresite, 0 )
@@ -77,7 +81,7 @@
         const medios = historicoConsultas.filter(consultaAtual => consultaAtual.nivel === "medio").length
         const baixos = historicoConsultas.filter(consultaAtual => consultaAtual.nivel === "baixo").length
 
-        const sitessuspeitos = historicoConsultas.filter(consultaAtual => consultaAtual.scoresite < 70).map(consultaAtual => consultaAtual.url_site)
+        const sitessuspeitos = historicoConsultas.filter(consultaAtual => consultaAtual.scoresite < 70).map(consultaAtual => consultaAtual.urlsite)
 
         const admin = request.user?.nome || "administrador"
 

@@ -1,5 +1,5 @@
-import Fastify from "fastify"
 import "dotenv/config"
+import Fastify from "fastify"
 import userRoutes from "../routes/user.js"
 
 const fastify = Fastify({

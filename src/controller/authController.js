@@ -1,23 +1,9 @@
-import bcrypt from "bcryptjs";
 import  jwt  from "jsonwebtoken";
-import { PrismaClient } from "../database/prisma.js"
+import bcrypt from "bcryptjs";
+import prisma from "../database/prisma.js";
+import fastify from "fastify";
 
-const prisma = new PrismaClient()
-
-export default async function (fastify, opts) {
-    fastify.post("/register", {
-        schema: {
-            body: {
-                type: "object",
-                required: ["nome", "email", "senha"],
-                properties: {
-                    nome: {type: "string"},
-                    email: {type: "string", format: "email"},
-                    senha: {type: "string", minLength: 6}
-                }
-            }
-        }
-    }, async (request, reply) => {
+export async function Acesso(request, reply) {
         const {nome, email, senha} = request.body
 
         try {
@@ -49,5 +35,31 @@ export default async function (fastify, opts) {
             return reply.status(500).send({erro: "erro ao salvar", detalhe: error.message})
         }
 
+    }
+export async function Login (request, reply) {
+
+    const {email, senha} = request.body
+
+    const consultaDB = await prisma.usuario.findUnique({
+        where: {email}
     })
+    if (!consultaDB) {
+        return reply.status(401).send({ erro: "email nao existe" })
+    }
+    const igual = await bcrypt.compare(senha, consultaDB.senha)
+
+    if (igual) {
+        const token = jwt.sign (
+            {id: consultaDB.id,
+             nome: consultaDB.nome   
+            },
+            process.env.JWT_SECRET,
+            {expiresIn: "15m"}
+        )
+        return reply.status(200).send({token: token})
+    } else {
+        return reply.status(401).send({
+            error: "senha incorreta"
+        })
+    }
 }
