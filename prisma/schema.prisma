@@ -6,6 +6,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Empresa {
+  id Int @id @default(autoincrement())
+  nome String
+  codigo String @unique
+  createdAt DateTime @default(now())
+  usuarios usuario[]
+  consultas historicoConsultas[]
+}
+
 model usuario {
   id Int @id @default(autoincrement())
   nome String 
@@ -13,6 +22,8 @@ model usuario {
   senha String 
   role String   @default("user")
   createdAt DateTime @default(now())
+  empresaId Int
+  empresa Empresa @relation(fields: [empresaId], references: [id])
 }
 
 enum NivelRisco {
@@ -29,4 +40,6 @@ model historicoConsultas {
   scoresite Int
   nivel NivelRisco
   datahora DateTime @default(now())
+  empresaId Int
+  empresa Empresa @relation(fields: [empresaId], references: [id])
 }
