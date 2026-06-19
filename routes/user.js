@@ -29,7 +29,9 @@ fastify.post("/register", {
                 properties: {
                     nome: {type: "string"},
                     email: {type: "string", format: "email"},
-                    senha: {type: "string", minLength: 6}
+                    senha: {type: "string", minLength: 6},
+                    nomeEmpresa: {type: "string"},
+                    codigo: {type: "string"}
                 }
             }
         }

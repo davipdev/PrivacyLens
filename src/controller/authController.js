@@ -2,9 +2,10 @@ import  jwt  from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import prisma from "../database/prisma.js";
 import fastify from "fastify";
+import crypto from "crypto"
 
 export async function Acesso(request, reply) {
-        const {nome, email, senha} = request.body
+        const {nome, email, senha, codigo, nomeEmpresa} = request.body
 
         try {
             const usuarioexiste = await prisma.usuario.findUnique({
@@ -17,12 +18,44 @@ export async function Acesso(request, reply) {
             }
             const salt = await bcrypt.genSalt(10)
             const hash = await bcrypt.hash(senha, salt)
-        
+            
+            let empresaID
+            let rolefinal = "usuario"
+
+            if (codigo) {
+                const empresaExistente = await prisma.empresa.findUnique({
+                    where: {codigo: codigo}
+                })
+            if (!empresaExistente) {
+                return reply.status(400).send({
+                    erro: "codigo invalido ou empresa nao encontrada."
+                })
+            }
+            empresaID = empresaExistente.id
+            rolefinal = "usuario"
+            }
+            else {
+                const codigoAle = `PK-${crypto.randomBytes(3).toString("hex").toUpperCase()}`
+
+                const nomefinalemp = nomeEmpresa || `tudo bem ${nome}?`
+
+                const novaempresa = await prisma.empresa.create({
+                    data: {
+                        nome: nomefinalemp,
+                        codigo: codigoAle
+                    }
+                })
+                empresaID = novaempresa.id
+                rolefinal = "admin"
+            }
+
             const novousuario = await prisma.usuario.create({
                 data: {
                     nome: nome,
                     email: email,
-                    senha: hash
+                    senha: hash,
+                    role: rolefinal,
+                    empresaId: empresaID
                 }
             })
             
