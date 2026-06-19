@@ -2,11 +2,10 @@
     import { identificarCat } from "../utils/urlservico.js"
     import prisma from "../database/prisma.js"
     
-    const historicoConsultas = []
-    
     export async function avaliarURL(request , reply) {
        const { url, dados_solicitados } = request.body
        
+       const {id: usuarioId, empresaId } = request.user
        const servico = identificarCat(url)
        const regra = regras[servico]
 
@@ -46,13 +45,16 @@
         nivelrisco = "medio"
     }
 
-     historicoConsultas.push ({
-        id: historicoConsultas.length + 1,
-        urlsite: url,
-        categoria: servico,
-        scoresite: score,
-        nivel: nivelrisco,
-        data_hora: new Date()
+     const Novaconsulta = await prisma.historicoConsultas.create({
+        data:{
+            urlsite: url,
+            categoria: servico,
+            scoresite: score,
+            nivel: nivelrisco,
+            data_hora: new Date(),
+            usuarioId: usuarioId,
+            empresaId: empresaId
+        }
     })
     let resultadoFiltrado = {}
         if (nessesario.length > 0) resultadoFiltrado.nessesario = nessesario
@@ -61,6 +63,7 @@
 
         return reply.status(200).send({
             success: true,
+            consulta_id: Novaconsulta.id,
             categoria_detectada: servico,
             score_privacidade: score,
             nivel_risco: nivelrisco,
