@@ -84,7 +84,9 @@ export async function Login (request, reply) {
     if (igual) {
         const token = jwt.sign (
             {id: consultaDB.id,
-             nome: consultaDB.nome   
+             nome: consultaDB.nome,
+             empresaId: consultaDB.empresaId,
+             role: consultaDB.role   
             },
             process.env.JWT_SECRET,
             {expiresIn: "15m"}
