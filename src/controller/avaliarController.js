@@ -51,7 +51,7 @@
             categoria: servico,
             scoresite: score,
             nivel: nivelrisco,
-            data_hora: new Date(),
+            datahora: new Date(),
             usuarioId: usuarioId,
             empresaId: empresaId
         }
