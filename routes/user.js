@@ -3,8 +3,6 @@ import { Acesso, Login } from "../src/controller/authController.js"
 
 export default async function (fastify, options) {
 
-fastify.addHook('preHandler', verificar)
-
 fastify.post("/register", {
         schema: {
             body: {

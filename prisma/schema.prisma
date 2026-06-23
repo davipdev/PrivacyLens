@@ -41,5 +41,6 @@ model historicoConsultas {
   nivel NivelRisco
   datahora DateTime @default(now())
   empresaId Int
+  usuarioId Int
   empresa Empresa @relation(fields: [empresaId], references: [id])
 }

@@ -10,7 +10,7 @@ fastify.post("/avaliar", {
     schema: {
         body: {
             type: "object",
-            required: ["url", "dados_solicitados"],
+            required: ["url"],
             properties: {
                 url: {type: "string"},
                 dados_solicitados: {

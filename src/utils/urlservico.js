@@ -10,11 +10,6 @@ const palavrasEcommerce = ["shop", "store", "loja", "marketplace", "market", "ec
         return "ecommerce"
     }
     
-    const palavrasAdulto = ["adult", "porn", "xxx", "sex", "cam", "cams", "tube", "escort", "fetish", "nsfw", "18plus", "18+", "hot", "erotic", "nude", "nudes", "webcam", "livecam", "mature"]
-    if (palavrasAdulto.some(palavra => urlLower.includes(palavra))) {
-        return "adulto"
-    }
-    
     const palavrasServico = ["service", "services", "tool", "tools", "utility", "utilities", "app", "dashboard", "panel", "platform", "portal", "system", "manager", "management", "api", "cloud", "hosting", "storage", "analytics", "monitor", "tracking", "workspace", "suite", "solutions", "software", "saas", "automation", "generator", "converter", "calculator"]
     if (palavrasServico.some(palavra => urlLower.includes(palavra))) {
         return "utilitarios"

@@ -1,13 +1,16 @@
     import { regras } from "../regras/regrasPrivacidade.js"
     import { identificarCat } from "../utils/urlservico.js"
+    import { escanearURL } from "./escanerController.js"
     import prisma from "../database/prisma.js"
     
     export async function avaliarURL(request , reply) {
-       const { url, dados_solicitados } = request.body
+       const { url } = request.body
        
+       console.log(url)
+
        const {id: usuarioId, empresaId } = request.user
-       const servico = identificarCat(url)
-       const regra = regras[servico]
+       const servico = identificarCat(url) || "ecommerce"
+       const regra = regras[servico] || regras["ecommerce"]
 
        if (!regra) {
         return reply.status(400).send({
@@ -15,12 +18,24 @@
             error: "URL errada ou inexistente."
         })
        }
+
+       const escaneamento = await escanearURL(url)
+
+       if (escaneamento.erro) {
+        return reply.status(422).send({
+            success: false,
+            error: "nao foi possivel escanear"
+        })
+       }
+       const dados_solicitados = escaneamento.inputs.map(input => input.name)
        
        let nessesario = []
        let talvez = []
        let abusivo = []
 
-       for (const dado of dados_solicitados) {
+       for (let dado of dados_solicitados) {
+
+        dado = dado.toLowerCase().trim()
 
         if(regra.nessesario.includes(dado)) {
             nessesario.push(dado)
@@ -35,6 +50,7 @@
 
     score -= (talvez.length * 2)
     score -= (abusivo.length * 20)
+    if (score < 0 ) score = 0
       
     let nivelrisco = "baixo"
     if (score < 40) {
@@ -52,8 +68,8 @@
             scoresite: score,
             nivel: nivelrisco,
             datahora: new Date(),
-            usuarioId: usuarioId,
-            empresaId: empresaId
+            usuarioId: Number(usuarioId),
+            empresaId: Number(empresaId)
         }
     })
     let resultadoFiltrado = {}
