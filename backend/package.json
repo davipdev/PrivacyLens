@@ -9,6 +9,7 @@
     "db:migrate": "npx \"prisma\" migrate dev --config prisma.config.cjs"
   },
   "dependencies": {
+    "@fastify/cors": "^11.2.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "bcrypt": "^6.0.0",

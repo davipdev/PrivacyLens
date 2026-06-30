@@ -1,10 +1,16 @@
 import "dotenv/config"
 import Fastify from "fastify"
+import fastifyCors from "@fastify/cors"
 import userRoutes from "../routes/user.js"
 import { app } from "../routes/app.js"
 
 const fastify = Fastify({
     logger: true
+})
+
+await app.register(fastifyCors, {
+    origin:"http://localhost:3000",
+    methods: [ "GET", "POST", "PUT", "DELETE"]
 })
 
 fastify.get("/teste",  async (request , reply) => {
