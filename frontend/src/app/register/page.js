@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import AuthShell from "@/components/AuthShell";
+import { useRouter } from "next/navigation";
 import {
   User,
   Mail,
@@ -28,6 +29,41 @@ export default function RegisterPage() {
   const [senha, setSenha] = useState("");
   const [empresa, setEmpresa] = useState("");
   const [codigo, setCodigo] = useState("");
+  const [loading, setLoading] = useState(false)
+  const [erro, setErro] = useState("")
+  const router = useRouter()
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setErro("")
+    setLoading(true)
+
+    try {
+    const resposta = await fetch("http://localhost:3500/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json"},
+      body: JSON.stringify({
+        nome: nome,
+        email: email,
+        senha: senha,
+        nomeEmpresa: empresa,
+        codigo: codigo
+      })
+    })
+
+    const dados = await resposta.json()
+
+    if (!resposta.ok) {
+      setErro(dados.erro || "nao foi possivel criar a conta")
+      return
+    }
+    router.push("/login")
+  } catch(err) {
+    setErro("falha no servidor")
+  } finally {
+    setLoading(false)
+  }
+  }
+
 
   return (
     <AuthShell
@@ -46,7 +82,7 @@ export default function RegisterPage() {
         </>
       }
     >
-      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form className="space-y-4" onSubmit={(handleSubmit)}>
         <label className="block">
           <span className={fieldLabel}>Nome completo</span>
           <div className="relative">
@@ -83,6 +119,8 @@ export default function RegisterPage() {
               type={mostrarSenha ? "text" : "password"}
               placeholder="Mínimo de 6 caracteres"
               className={`${fieldInput} pr-11`}
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
             />
             <button
               type="button"
@@ -107,6 +145,8 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="Opcional"
                 className={fieldInput}
+                value={empresa}
+                onChange={(e) => setEmpresa(e.target.value)}
               />
             </div>
           </label>
@@ -119,6 +159,8 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="PK-XXXX"
                 className={`${fieldInput} uppercase placeholder:normal-case`}
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
               />
             </div>
           </label>
@@ -130,13 +172,18 @@ export default function RegisterPage() {
             nova empresa é criada e você vira o administrador dela.
           </p>
         </div>
-
+      {erro && (
+        <p className="border-l-2 border-red-400/60 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
+       {erro}
+      </p>
+        )}
         <button
           type="submit"
+          disabled={loading}
           className="group inline-flex h-11 w-full items-center justify-center gap-2 rounded-none bg-emerald-400 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-300"
         >
-          Criar conta
-          <ArrowRight className="h-[18px] w-[18px] transition group-hover:translate-x-0.5" />
+          {loading ? "Criando..." : "Criar conta"}
+          <ArrowRight className="h-[18px] w-[18px] transition group-hover:translate-x-0.5" />   
         </button>
       </form>
     </AuthShell>

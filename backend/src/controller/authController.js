@@ -94,7 +94,7 @@ export async function Login (request, reply) {
         return reply.status(200).send({token: token})
     } else {
         return reply.status(401).send({
-            error: "senha incorreta"
+            erro: "senha incorreta"
         })
     }
 }

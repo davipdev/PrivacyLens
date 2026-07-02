@@ -8,7 +8,7 @@ const fastify = Fastify({
     logger: true
 })
 
-await app.register(fastifyCors, {
+await fastify.register(fastifyCors, {
     origin:"http://localhost:3000",
     methods: [ "GET", "POST", "PUT", "DELETE"]
 })
