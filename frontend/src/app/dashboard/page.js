@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Logo from "@/components/Logo";
 import Meter from "@/components/Meter";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   ScanLine,
@@ -32,37 +36,6 @@ const nivelStyles = {
   baixo: { label: "Baixo", texto: "text-emerald-400", barra: "bg-emerald-400", swatch: "bg-emerald-400" },
 };
 
-const metricas = [
-  { label: "Total de consultas", valor: "128", delta: "+12 / semana", sobe: true, icon: Globe, cor: "text-sky-400" },
-  { label: "Alertas críticos", valor: "09", delta: "+2 / semana", sobe: false, icon: AlertTriangle, cor: "text-rose-400" },
-  { label: "Sites suspeitos", valor: "26", delta: "score < 70", sobe: false, icon: ShieldCheck, cor: "text-amber-400" },
-];
-
-const distribuicao = [
-  { nivel: "critico", total: 9 },
-  { nivel: "alto", total: 17 },
-  { nivel: "medio", total: 24 },
-  { nivel: "baixo", total: 78 },
-];
-
-const ranking = [
-  { urlsite: "checkout.lojamoda.com.br", score: 38, nivel: "critico" },
-  { urlsite: "portal.creditofacil.com", score: 41, nivel: "critico" },
-  { urlsite: "app.fintechpay.com", score: 62, nivel: "alto" },
-  { urlsite: "promo.descontoja.net", score: 66, nivel: "alto" },
-  { urlsite: "cadastro.vendasplus.com", score: 69, nivel: "alto" },
-];
-
-const consultas = [
-  { id: 412, urlsite: "checkout.lojamoda.com.br", categoria: "E-commerce", score: 38, nivel: "critico", data: "29 jun · 14:22" },
-  { id: 411, urlsite: "app.fintechpay.com", categoria: "Fintech", score: 62, nivel: "alto", data: "29 jun · 11:08" },
-  { id: 410, urlsite: "blog.noticiashoje.com", categoria: "Conteúdo", score: 94, nivel: "baixo", data: "28 jun · 19:47" },
-  { id: 409, urlsite: "loja.techstore.com.br", categoria: "E-commerce", score: 81, nivel: "medio", data: "28 jun · 16:30" },
-  { id: 408, urlsite: "portal.creditofacil.com", categoria: "Fintech", score: 41, nivel: "critico", data: "28 jun · 09:12" },
-  { id: 407, urlsite: "cadastro.vendasplus.com", categoria: "E-commerce", score: 69, nivel: "alto", data: "27 jun · 22:05" },
-];
-
-const maxDistribuicao = Math.max(...distribuicao.map((d) => d.total));
 const eyebrow = "font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500";
 
 function NivelBadge({ nivel }) {
@@ -76,6 +49,74 @@ function NivelBadge({ nivel }) {
 }
 
 export default function DashboardPage() {
+
+  const router = useRouter()
+  const [dados, setDados] = useState(null)
+
+  useEffect(() => {
+    async function carregar() {
+      const token = localStorage.getItem("token")
+
+      if (!token) {
+        router.push("/login")
+        return 
+      }
+
+      const resposta = await fetch("http://localhost:3500/admin/dashboard", {
+        headers: {Authorization: `Bearer ${token}`}
+      })
+      if (!resposta.ok) {
+        router.push("/login")
+        return
+      }
+
+      const json = await resposta.json()
+      console.log(json)
+      setDados(json)
+    }
+    carregar()
+  }, [])
+
+  if (!dados) {
+    return <div className="p-8 text-zinc-400">Carregando...</div>;
+  }
+
+  const metricas = [
+    { label: "Total de consultas", valor: dados.metrica.total,          delta: "total no banco", sobe: true,  icon: Globe,         cor: "text-sky-400" },
+    { label: "Alertas críticos",   valor: dados.metrica.alertasCriticos, delta: "nível crítico",  sobe: false, icon: AlertTriangle, cor: "text-rose-400" },
+    { label: "Sites suspeitos",    valor: dados.ranking.length,          delta: "score < 70",     sobe: false, icon: ShieldCheck,   cor: "text-amber-400" },
+  ]
+
+  const distribuicao = [
+    { nivel: "critico", total: dados.metrica.alertasCriticos },
+    { nivel: "alto",    total: dados.metrica.alertasAltos },
+    { nivel: "medio",   total: dados.metrica.alertasMedios },
+    { nivel: "baixo",   total: dados.metrica.alertasBaixos },
+  ]
+
+  const maxDistribuicao = Math.max(...distribuicao.map((d) => d.total))
+
+  const consultas = dados.logs.map((log) => ({
+    id: log.id,
+    urlsite: log.urlsite,
+    categoria: log.categoria,
+    score: log.scoresite,
+    nivel: log.nivel,
+    data: new Date(log.datahora).toLocaleString("pt-BR", {
+      day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
+    })
+  }))
+
+  const ranking = dados.logs
+  .filter((log) => log.scoresite < 70)
+  .sort((a,b) => a.scoresite - b.scoresite)
+  .slice(0,5)
+  .map((log) => ({
+    urlsite: log.urlsite,
+    score: log.scoresite,
+    nivel: log.nivel
+  }))
+
   return (
     <div className="flex min-h-screen w-full">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-[#080b10] lg:flex">
@@ -165,11 +206,11 @@ export default function DashboardPage() {
                 <ShieldCheck className="h-4 w-4 text-emerald-400" />
               </div>
               <p className="mt-4 font-mono text-4xl font-semibold tracking-tight text-white">
-                {scoreGeral}
+                {dados.scoreGeral}
                 <span className="text-lg text-zinc-600"> /100</span>
               </p>
               <div className="mt-4">
-                <Meter value={scoreGeral} segments={16} height="h-2.5" />
+                <Meter value={dados.scoreGeral} segments={16} height="h-2.5" />
               </div>
             </div>
 
