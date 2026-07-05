@@ -52,8 +52,10 @@ export default function DashboardPage() {
 
   const router = useRouter()
   const [dados, setDados] = useState(null)
-
-  useEffect(() => {
+  const [url, setUrl] = useState("")
+  const [analisando, setAnalisando] = useState(false)
+  const [erroanalise, setErroanalise] = useState("")
+  
     async function carregar() {
       const token = localStorage.getItem("token")
 
@@ -74,13 +76,46 @@ export default function DashboardPage() {
       console.log(json)
       setDados(json)
     }
+    useEffect(() => {
     carregar()
   }, [])
+
+  async function handleAnalisar() {
+    const token = localStorage.getItem("token")
+    setAnalisando(true)
+    setErroanalise("")
+
+    try {
+      const resposta = await fetch("http://localhost:3500/avaliar", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body:JSON.stringify({url})
+      })
+      const dados = await resposta.json()
+      if (!resposta.ok) {
+        setErroanalise(dados.error || "aldo deu errado para analisar essa url")
+        return
+      }
+      console.log(dados)
+      await carregar()
+      setUrl("")
+    } catch (err) {
+      setErroanalise("falha ao conectar no servidor")
+    } finally {
+      setAnalisando(false)
+    }
+  }
 
   if (!dados) {
     return <div className="p-8 text-zinc-400">Carregando...</div>;
   }
+  const token = localStorage.getItem("token")
+  const usuario  = JSON.parse(atob(token.split(".")[1]))
 
+  const iniciais = usuario.nome.split("").map((p) =>p[0]).join("").slice(0,2).toUpperCase()
   const metricas = [
     { label: "Total de consultas", valor: dados.metrica.total,          delta: "total no banco", sobe: true,  icon: Globe,         cor: "text-sky-400" },
     { label: "Alertas críticos",   valor: dados.metrica.alertasCriticos, delta: "nível crítico",  sobe: false, icon: AlertTriangle, cor: "text-rose-400" },
@@ -117,6 +152,11 @@ export default function DashboardPage() {
     nivel: log.nivel
   }))
 
+  function Logout() {
+    localStorage.removeItem("token")
+    router.push("/login")
+  }
+
   return (
     <div className="flex min-h-screen w-full">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-[#080b10] lg:flex">
@@ -145,20 +185,20 @@ export default function DashboardPage() {
         <div className="border-t border-white/10 p-3">
           <div className="flex items-center gap-3 px-2 py-2">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-[3px] bg-emerald-400 font-mono text-sm font-semibold text-emerald-950">
-              DO
+              {iniciais}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">Davi Oliveira</p>
-              <p className={`${eyebrow} truncate`}>Administrador</p>
+              <p className="truncate text-sm font-medium text-white">{usuario.nome}</p>
+              <p className={`${eyebrow} truncate`}>{usuario.role}</p>
             </div>
           </div>
-          <Link
-            href="/login"
-            className="mt-1 flex items-center gap-3 px-3 py-2 text-sm text-zinc-400 transition hover:bg-white/[0.03] hover:text-white"
+          <button
+          onClick={Logout}
+          className="mt-1 flex w-full items-center gap-3 px-3 py-2 text-sm text-zinc-400 transition hover:bg-white/[0.03] hover:text-white"
           >
-            <LogOut className="h-[18px] w-[18px]" />
+            <LogOut className="h-[18px] w-[18px]"/>
             Sair
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -171,13 +211,17 @@ export default function DashboardPage() {
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-zinc-500" />
             <input
               type="text"
-              placeholder="Analisar uma URL..."
               className="w-full max-w-md rounded-none border border-white/10 bg-black/20 py-2.5 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-emerald-400/60 focus:bg-black/30"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleAnalisar()}}
+              disabled={analisando}
+              placeholder={analisando ? "Analisando..." : "Analisar uma URL..."}
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] bg-emerald-400 font-mono text-sm font-semibold text-emerald-950">
-              DO
+              {iniciais}
             </span>
           </div>
         </header>
@@ -185,6 +229,11 @@ export default function DashboardPage() {
         <main className="flex-1 space-y-6 p-5 lg:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
+              {erroanalise && (
+            <p className="border-l-2 border-red-400/60 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
+              {erroanalise}
+              </p>
+               )}
               <p className={eyebrow}>Painel / Visão geral</p>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-white">
                 Visão geral
@@ -344,7 +393,9 @@ export default function DashboardPage() {
                         <td className="px-6 py-4">
                           <span className="flex items-center gap-2.5">
                             <Globe className="h-4 w-4 shrink-0 text-zinc-600" />
-                            <span className="text-zinc-200">{c.urlsite}</span>
+                            <span className="block max-w-[260px] truncate text-zinc-200" title={c.urlsite}>
+                                {c.urlsite}
+                            </span>
                           </span>
                         </td>
                         <td className="px-6 py-4 text-zinc-400">{c.categoria}</td>

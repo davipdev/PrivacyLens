@@ -87,8 +87,10 @@
         })
     }
     export async function dashboard(request, reply) {
-        
-        const historicoConsultas = await prisma.historicoConsultas.findMany()
+        const {empresaId} = request.user
+        const historicoConsultas = await prisma.historicoConsultas.findMany({
+            where: {empresaId}
+        })
 
         const totalconsultas = historicoConsultas.length
 
