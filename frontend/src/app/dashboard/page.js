@@ -23,10 +23,10 @@ import {
 const scoreGeral = 74;
 
 const navItems = [
-  { label: "Visão geral", icon: LayoutDashboard, ativo: true },
-  { label: "Nova análise", icon: ScanLine, ativo: false },
-  { label: "Histórico", icon: History, ativo: false },
-  { label: "Ranking", icon: BarChart, ativo: false },
+  { label: "Visão geral", icon: LayoutDashboard, ativo: true, href: "#visaogeral" },
+  { label: "Nova análise", icon: ScanLine, ativo: false, href: "#visaogeral" },
+  { label: "Histórico", icon: History, ativo: false, href: "#historico" },
+  { label: "Ranking", icon: BarChart, ativo: false, href: "#ranking" },
 ];
 
 const nivelStyles = {
@@ -55,6 +55,7 @@ export default function DashboardPage() {
   const [url, setUrl] = useState("")
   const [analisando, setAnalisando] = useState(false)
   const [erroanalise, setErroanalise] = useState("")
+  const [mostrartudo, setMostrartudo] = useState(false)
   
     async function carregar() {
       const token = localStorage.getItem("token")
@@ -115,7 +116,7 @@ export default function DashboardPage() {
   const token = localStorage.getItem("token")
   const usuario  = JSON.parse(atob(token.split(".")[1]))
 
-  const iniciais = usuario.nome.split("").map((p) =>p[0]).join("").slice(0,2).toUpperCase()
+  const iniciais = usuario.nome.split(" ").map((p) =>p[0]).join("").slice(0,2).toUpperCase()
   const metricas = [
     { label: "Total de consultas", valor: dados.metrica.total,          delta: "total no banco", sobe: true,  icon: Globe,         cor: "text-sky-400" },
     { label: "Alertas críticos",   valor: dados.metrica.alertasCriticos, delta: "nível crítico",  sobe: false, icon: AlertTriangle, cor: "text-rose-400" },
@@ -141,7 +142,7 @@ export default function DashboardPage() {
       day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit"
     })
   }))
-
+  const consultasVisiveis = mostrartudo ? consultas : consultas.slice(0, 5)
   const ranking = dados.logs
   .filter((log) => log.scoresite < 70)
   .sort((a,b) => a.scoresite - b.scoresite)
@@ -163,13 +164,13 @@ export default function DashboardPage() {
         <div className="border-b border-white/10 px-5 py-[18px]">
           <Logo />
         </div>
-
+        
         <nav className="flex-1 p-3">
           <p className={`${eyebrow} px-3 pb-2 pt-2`}>Painel</p>
-          {navItems.map(({ label, icon: Icon, ativo }) => (
+          {navItems.map(({ label, icon: Icon, ativo, href }) => (
             <a
               key={label}
-              href="#"
+              href={href}
               className={`flex items-center gap-3 border-l-2 px-3 py-2.5 text-sm font-medium transition ${
                 ativo
                   ? "border-emerald-400 bg-emerald-400/[0.07] text-emerald-300"
@@ -207,18 +208,29 @@ export default function DashboardPage() {
           <div className="lg:hidden">
             <Logo showText={false} />
           </div>
-          <div className="relative hidden flex-1 sm:block">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-zinc-500" />
-            <input
-              type="text"
-              className="w-full max-w-md rounded-none border border-white/10 bg-black/20 py-2.5 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-emerald-400/60 focus:bg-black/30"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") handleAnalisar()}}
-              disabled={analisando}
-              placeholder={analisando ? "Analisando..." : "Analisar uma URL..."}
-            />
-          </div>
+          <div className="flex flex-1 items-center gap-2 sm:flex">
+        <div className="relative w-full max-w-md">
+
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-zinc-500" />
+          <input
+          type="text"
+          className="w-full rounded-none border border-white/10 bg-black/20 py-2.5 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-emerald-400/60 focus:bg-black/30"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          onKeyDown={(e) => { if (e.key === "Enter") handleAnalisar(); }}
+          disabled={analisando}
+          placeholder={analisando ? "Analisando..." : "Analisar uma URL..."}
+        />
+        </div>
+          <button
+        onClick={handleAnalisar}
+        disabled={analisando}
+        className="inline-flex shrink-0 items-center gap-2 bg-emerald-400 px-4 py-2.5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-300 disabled:opacity-50"
+          >
+          <ScanLine className="h-[18px] w-[18px]" />
+          Analisar
+      </button>
+        </div>
           <div className="ml-auto flex items-center gap-2">
             <span className="inline-flex h-10 w-10 items-center justify-center rounded-[3px] bg-emerald-400 font-mono text-sm font-semibold text-emerald-950">
               {iniciais}
@@ -227,7 +239,7 @@ export default function DashboardPage() {
         </header>
 
         <main className="flex-1 space-y-6 p-5 lg:p-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div id="visaogeral" className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               {erroanalise && (
             <p className="border-l-2 border-red-400/60 bg-red-400/[0.05] px-4 py-3 text-sm text-red-300">
@@ -242,12 +254,15 @@ export default function DashboardPage() {
                 Empresa PrivacyLens Labs
               </p>
             </div>
-            <button className="group inline-flex h-11 items-center justify-center gap-2 self-start bg-emerald-400 px-5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-300 sm:self-auto">
+              <button
+                onClick={handleAnalisar}
+                disabled={analisando}
+                className="group inline-flex h-11 items-center justify-center gap-2 self-start bg-emerald-400 px-5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-300 disabled:opacity-50 sm:self-auto"
+              >
               <ScanLine className="h-[18px] w-[18px]" />
-              Analisar nova URL
-            </button>
-          </div>
-
+               Analisar nova URL
+              </button>
+              </div>
           <div className="grid grid-cols-1 border border-white/10 md:grid-cols-2 xl:grid-cols-4">
             <div className="border-white/10 p-6 max-md:border-b md:border-r">
               <div className="flex items-center justify-between">
@@ -328,7 +343,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="p-6">
-              <div className="flex items-center justify-between">
+              <div id="ranking" className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-white">
                   Sites suspeitos
                 </h2>
@@ -359,7 +374,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="border border-white/10">
-            <div className="flex items-center justify-between border-b border-white/10 p-6">
+            <div id="historico" className="flex items-center justify-between border-b border-white/10 p-6">
               <h2 className="text-sm font-semibold text-white">
                 Histórico de análises
               </h2>
@@ -383,8 +398,8 @@ export default function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {consultas.map((c) => {
-                    const s = nivelStyles[c.nivel];
+                  {consultasVisiveis.map((c) => {
+                    const s = nivelStyles[c.nivel]
                     return (
                       <tr
                         key={c.id}
@@ -415,9 +430,19 @@ export default function DashboardPage() {
                 </tbody>
               </table>
             </div>
+            {consultas.length > 5 && (
+            <div className="border-t border-white/10 p-4 text-center">
+            <button
+              onClick={() => setMostrartudo((v) => !v)}
+              className="font-mono text-[11px] uppercase tracking-wider text-emerald-400 transition hover:text-emerald-300"
+            >
+            {mostrartudo ? "Ver menos" : `Ver mais (${consultas.length - 5})`}
+    </button>
+  </div>
+)}
           </div>
         </main>
       </div>
     </div>
-  );
+  )
 }
