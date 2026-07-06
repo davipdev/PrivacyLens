@@ -8,7 +8,7 @@
 
 **Demo ao vivo:** _em breve_ &nbsp;•&nbsp;
 
-**Repositório:** [](github.com/davipdev/PrivacyLens)
+[**Repositório:**](github.com/davipdev/PrivacyLens)
 
 ---
 
