@@ -28,10 +28,13 @@ Muitos sites coletam **mais dados do que precisam** para funcionar. O PrivaKey a
 
  Camada | Tecnologias 
 
- **Frontend** | Next.js (App Router), React, Tailwind CSS |
- **Backend** | Node.js, Fastify, Prisma ORM |
- **Banco** | PostgreSQL |
- **Auth & outros** | JWT (jsonwebtoken), bcrypt, Cheerio (scraping de HTML) |
+ **Frontend** | Next.js (App Router), React, Tailwind CSS 
+ 
+ **Backend** | Node.js, Fastify, Prisma ORM 
+ 
+ **Banco** | PostgreSQL 
+ 
+ **Auth & outros** | JWT (jsonwebtoken), bcrypt, Cheerio (scraping de HTML) 
 
 ## Como funciona?
 
@@ -100,11 +103,15 @@ Acesse **http://localhost:3000**.
 
 | Método | Rota | Protegida | Descrição |
 
-| `POST` | `/register` |   Cria usuário (e empresa, se não houver código) |
-| `POST` | `/login` |   Autentica e retorna o JWT |
-| `POST` | `/avaliar` |   Analisa uma URL e salva o resultado |
-| `GET`  | `/admin/dashboard` |   Métricas e dados agregados da empresa |
-| `GET`  | `/historico` |   Histórico de análises da empresa |
+| `POST` | `/register` |   Cria usuário (e empresa, se não houver código) 
+
+| `POST` | `/login` |   Autentica e retorna o JWT 
+
+| `POST` | `/avaliar` |   Analisa uma URL e salva o resultado 
+
+| `GET`  | `/admin/dashboard` |   Métricas e dados agregados da empresa 
+
+| `GET`  | `/historico` |   Histórico de análises da empresa 
 
 ## Limitações conhecidas e próximos passos
 
