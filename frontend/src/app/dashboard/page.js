@@ -97,7 +97,7 @@ export default function DashboardPage() {
       })
       const dados = await resposta.json()
       if (!resposta.ok) {
-        setErroanalise(dados.error || "aldo deu errado para analisar essa url")
+        setErroanalise(dados.error || "algo deu errado para analisar essa url")
         return
       }
       console.log(dados)
