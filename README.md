@@ -130,4 +130,4 @@ Este é um projeto de estudo / prova de conceito. A análise é **heurística** 
 - Cookie `httpOnly` + refresh token no lugar do `localStorage`
 - Limpeza de parâmetros de tracking (UTM) das URLs salvas
 
-Feito por **Davi Oliveira** — https://www.linkedin.com/in/davi-oliveira-72a862351(#) · https://github.com/davipdev(#)
+Feito por **Davi Oliveira** — [https://www.linkedin.com/in/davi-oliveira-72a862351](#) · [https://github.com/davipdev](#)
