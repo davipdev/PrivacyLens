@@ -314,7 +314,7 @@ export default function DashboardPage() {
                 <h2 className="text-sm font-semibold text-white">
                   Distribuição de risco
                 </h2>
-                <span className={eyebrow}>128 análises</span>
+                <span className={eyebrow}>{dados.metrica.total} análises</span>
               </div>
               <div className="mt-6 space-y-5">
                 {distribuicao.map(({ nivel, total }) => {
