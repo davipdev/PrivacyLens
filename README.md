@@ -3,10 +3,12 @@
 > Analisador de privacidade de sites: escaneia os formulários de uma página, classifica os dados que ela pede e gera um **score de privacidade** com alertas de risco — tudo num dashboard multiempresa.
 
 
-![Demonstração do PrivaKey](./docs/demo.gif)
+![Demonstração do PrivacyLens](./docs/demo.gif)
 
 
-**Demo ao vivo:** _em breve_ &nbsp;•&nbsp; 📂 **Repositório:** [github.com/seu-usuario/privakey](#)
+**Demo ao vivo:** _em breve_ &nbsp;•&nbsp;
+
+**Repositório:** [github.com/davipdev/PrivacyLens](#)
 
 ---
 
@@ -128,8 +130,4 @@ Este é um projeto de estudo / prova de conceito. A análise é **heurística** 
 - Cookie `httpOnly` + refresh token no lugar do `localStorage`
 - Limpeza de parâmetros de tracking (UTM) das URLs salvas
 
-Autor
-Davi Oliveira
-
-<!-- TODO: preencher -->
-Feito por **[Seu Nome]** — [LinkedIn](#) · [GitHub](#)
+Feito por **Davi Oliveira** — https://www.linkedin.com/in/davi-oliveira-72a862351(#) · https://github.com/davipdev(#)
