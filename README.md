@@ -53,6 +53,19 @@ URL  →  Cheerio busca o HTML e extrai os campos de formulário
 - Cada campo *abusivo*: **−20 pontos**
 - Níveis: `crítico` (<40) · `alto` (<70) · `médio` (<90) · `baixo` (≥90)
 
+## Quer testar?
+
+Não tem uma URL à mão — ou quer ver o score reagir em cada faixa? Incluí quatro lojas fictícias, uma pra cada nível de risco. Elas moram dentro da própria demo: pegue o endereço da Vercel e acrescente o caminho da loja no final, depois cole no analisador.
+
+A URL completa é o endereço da demo **+** o caminho da loja — por exemplo `https://privacy-lens-zeta.vercel.app/loja/critico.html`.
+
+- **Baixo** (score 100) — pede só o essencial: nome, e-mail, senha, telefone — `/loja/baixo.html`
+- **Médio** (80) — tudo isso, mais a profissão — `/loja/medio.html`
+- **Alto** (60) — já pede profissão e renda mensal — `/loja/alto.html`
+- **Crítico** (20) — profissão, renda, nome da mãe, acesso à câmera... — `/loja/critico.html`
+
+Clicar no link abre só a loja-fictícia; quem calcula o score é o analisador.
+
 ## Modelo de dados
 
 - **Empresa** — `nome`, `codigo` (único), e relações com usuários e consultas
