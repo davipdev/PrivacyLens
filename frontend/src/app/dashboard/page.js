@@ -65,7 +65,7 @@ export default function DashboardPage() {
         return 
       }
 
-      const resposta = await fetch("http://localhost:3500/admin/dashboard", {
+      const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard`, {
         headers: {Authorization: `Bearer ${token}`}
       })
       if (!resposta.ok) {
@@ -87,7 +87,7 @@ export default function DashboardPage() {
     setErroanalise("")
 
     try {
-      const resposta = await fetch("http://localhost:3500/avaliar", {
+      const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/avaliar`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

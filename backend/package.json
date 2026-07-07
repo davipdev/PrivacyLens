@@ -4,9 +4,10 @@
   "type": "module",
   "main": "src/server.js",
   "scripts": {
-    "start": "node src/server.js",
+    "start": "prisma migrate deploy --config prisma.config.cjs && node src/server.js",
     "dev": "fastify start -l info app.js",
-    "db:migrate": "npx \"prisma\" migrate dev --config prisma.config.cjs"
+    "db:migrate": "npx \"prisma\" migrate dev --config prisma.config.cjs",
+    "postinstall": "prisma generate --config prisma.config.cjs"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
@@ -18,9 +19,7 @@
     "dotenv": "^17.4.2",
     "fastify": "^5.8.5",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.21.0"
-  },
-  "devDependencies": {
+    "pg": "^8.21.0",
     "prisma": "^7.8.0"
   }
 }

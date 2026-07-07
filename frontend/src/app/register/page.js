@@ -38,7 +38,7 @@ export default function RegisterPage() {
     setLoading(true)
 
     try {
-    const resposta = await fetch("http://localhost:3500/register", {
+    const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json"},
       body: JSON.stringify({

@@ -8,13 +8,11 @@
 
 **Demo ao vivo:** _em breve_ &nbsp;•&nbsp;
 
-[**Repositório**](github.com/davipdev/PrivacyLens)
-
 ---
 
 ## Sobre o projeto
 
-Muitos sites coletam **mais dados do que precisam** para funcionar. O PrivaKey ajuda a enxergar isso: você informa a URL de uma página, e o sistema escaneia os campos de formulário que ela pede, classifica cada um (necessário / talvez / abusivo) e calcula um **score de 0 a 100** com o nível de risco.
+Muitos sites coletam **mais dados do que precisam** para funcionar. O PrivacyLens ajuda a enxergar isso: você informa a URL de uma página, e o sistema escaneia os campos de formulário que ela pede, classifica cada um (necessário / talvez / abusivo) e calcula um **score de 0 a 100** com o nível de risco.
 
 É um projeto **full-stack** construído para aprofundar autenticação, modelagem de dados relacional e arquitetura cliente-servidor. O tema conversa diretamente com pautas de **privacidade e LGPD/GDPR**.
 

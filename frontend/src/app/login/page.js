@@ -27,7 +27,7 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      const resposta = await fetch("http://localhost:3500/login", {
+      const resposta = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify({email, senha})
