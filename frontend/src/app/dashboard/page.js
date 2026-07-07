@@ -56,6 +56,7 @@ export default function DashboardPage() {
   const [analisando, setAnalisando] = useState(false)
   const [erroanalise, setErroanalise] = useState("")
   const [mostrartudo, setMostrartudo] = useState(false)
+  const [copiado, setCopiado] = useState(false)
   
     async function carregar() {
       const token = localStorage.getItem("token")
@@ -156,6 +157,12 @@ export default function DashboardPage() {
   function Logout() {
     localStorage.removeItem("token")
     router.push("/login")
+  }
+
+  function copiarCodigo() {
+    navigator.clipboard.writeText(dados.codigoEmpresa)
+    setCopiado(true)
+    setTimeout(() => setCopiado(false), 2000)
   }
 
   return (
@@ -263,6 +270,29 @@ export default function DashboardPage() {
                Analisar nova URL
               </button>
               </div>
+
+          {usuario.role === "admin" && dados.codigoEmpresa && (
+            <div className="flex flex-col gap-4 border border-white/10 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className={eyebrow}>Convide sua equipe</p>
+                <p className="mt-2 text-sm text-zinc-400">
+                  Compartilhe este código para adicionar pessoas à sua empresa.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-lg tracking-[0.2em] text-emerald-300">
+                  {dados.codigoEmpresa}
+                </span>
+                <button
+                  onClick={copiarCodigo}
+                  className="inline-flex shrink-0 items-center gap-2 border border-white/10 px-4 py-2.5 font-mono text-[11px] uppercase tracking-wider text-zinc-300 transition hover:border-emerald-400/60 hover:text-white"
+                >
+                  {copiado ? "Copiado" : "Copiar"}
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 border border-white/10 md:grid-cols-2 xl:grid-cols-4">
             <div className="border-white/10 p-6 max-md:border-b md:border-r">
               <div className="flex items-center justify-between">

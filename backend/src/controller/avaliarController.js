@@ -88,6 +88,9 @@
     }
     export async function dashboard(request, reply) {
         const {empresaId} = request.user
+        const empresa = await prisma.empresa.findUnique({
+            where: {id: empresaId}
+        })
         const historicoConsultas = await prisma.historicoConsultas.findMany({
             where: {empresaId}
         })
@@ -109,6 +112,7 @@
         return reply.status(200).send({
             success: true,
             mensagem: `painel de admin ${admin}`,
+            codigoEmpresa: empresa?.codigo,
             scoreGeral: scoregeral,
             metrica: {
                 total: totalconsultas,
