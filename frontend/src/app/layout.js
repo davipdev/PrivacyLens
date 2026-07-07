@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL("https://privacy-lens-zeta.vercel.app"),
   title: "PrivacyLens — Análise de Privacidade",
   description:
     "Escaneie sites, descubra quais dados eles pedem e receba um score de privacidade com alertas de risco.",

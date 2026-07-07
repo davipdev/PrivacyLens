@@ -6,7 +6,7 @@
 ![Demonstração do PrivacyLens](./docs/demo.gif)
 
 
-**Demo ao vivo:** _em breve_ &nbsp;•&nbsp;
+**Demo ao vivo:** [privacy-lens-zeta.vercel.app](https://privacy-lens-zeta.vercel.app)
 
 ---
 
