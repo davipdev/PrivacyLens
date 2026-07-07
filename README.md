@@ -12,40 +12,35 @@
 
 ## Sobre o projeto
 
-Muitos sites coletam **mais dados do que precisam** para funcionar. O PrivacyLens ajuda a enxergar isso: você informa a URL de uma página, e o sistema escaneia os campos de formulário que ela pede, classifica cada um (necessário / talvez / abusivo) e calcula um **score de 0 a 100** com o nível de risco.
+Construí o PrivacyLens pra encarar uma pergunta que parece boba, mas não é: *esse site realmente precisa coletar tudo isso?*
 
 É um projeto **full-stack** construído para aprofundar autenticação, modelagem de dados relacional e arquitetura cliente-servidor. O tema conversa diretamente com pautas de **privacidade e LGPD/GDPR**.
 
 ## Funcionalidades
 
-**Autenticação com JWT** — cadastro, login e rotas protegidas por middleware
-**Multiempresa (multi-tenant)** — cada usuário pertence a uma empresa; dados isolados por empresa, com papéis (`admin` / `usuario`) e código de convite
-**Análise de URL** — escaneia os formulários da página, classifica os campos e pontua o risco
-**Dashboard em tempo real** — score geral, métricas, distribuição de risco, ranking de sites suspeitos e histórico (que se atualiza sozinho após cada análise)
-**Sessão** — token guardado no cliente e enviado nas requisições protegidas; logout que encerra a sessão
+- **Autenticação com JWT** — cadastro, login e rotas protegidas por middleware
+- **Multiempresa (multi-tenant)** — cada usuário pertence a uma empresa; dados isolados por empresa, com papéis (`admin` / `usuario`) e código de convite
+- **Análise de URL** — escaneia os formulários da página, classifica os campos e pontua o risco
+- **Dashboard em tempo real** — score geral, métricas, distribuição de risco, ranking de sites suspeitos e histórico (que se atualiza sozinho após cada análise)
+- **Sessão** — token guardado no cliente e enviado nas requisições protegidas; logout que encerra a sessão
 
 ## Stack
 
- Camada | Tecnologias 
-
- **Frontend** | Next.js (App Router), React, Tailwind CSS 
- 
- **Backend** | Node.js, Fastify, Prisma ORM 
- 
- **Banco** | PostgreSQL 
- 
- **Auth & outros** | JWT (jsonwebtoken), bcrypt, Cheerio (scraping de HTML) 
+- **Frontend:** Next.js (App Router), React, Tailwind CSS
+- **Backend:** Node.js, Fastify, Prisma ORM
+- **Banco:** PostgreSQL
+- **Auth & outros:** JWT (jsonwebtoken), bcryptjs, Cheerio (scraping de HTML)
 
 ## Como funciona?
 
-** Fluxo de autenticação**
+**Fluxo de autenticação**
 ```
 Login  →  backend valida e assina um JWT  →  cliente guarda o token
        →  envia "Authorization: Bearer <token>" nas rotas protegidas
        →  middleware verifica o token a cada requisição
 ```
 
-** Fluxo de análise (`POST /avaliar`)**
+**Fluxo de análise (`POST /avaliar`)**
 ```
 URL  →  Cheerio busca o HTML e extrai os campos de formulário
      →  cada campo é classificado (necessário / talvez / abusivo)
@@ -66,9 +61,11 @@ URL  →  Cheerio busca o HTML e extrai os campos de formulário
 
 ## Rodando localmente
 
-## Pré-requisitos: **Node.js**, **PostgreSQL** e uma instância de banco criada.
+### Pré-requisitos
 
-## 1. Backend
+**Node.js**, **PostgreSQL** e uma instância de banco criada.
+
+### 1. Backend
 
 ```bash
 cd backend
@@ -89,7 +86,7 @@ npm run db:migrate
 npm start
 ```
 
-## 2. Frontend
+### 2. Frontend
 
 ```bash
 cd frontend
@@ -101,17 +98,14 @@ Acesse **http://localhost:3000**.
 
 ## Endpoints principais
 
-| Método | Rota | Protegida | Descrição |
+**Públicos**
+- `POST /register` — cria usuário (e empresa, se não houver código)
+- `POST /login` — autentica e retorna o JWT
 
-| `POST` | `/register` |   Cria usuário (e empresa, se não houver código) 
-
-| `POST` | `/login` |   Autentica e retorna o JWT 
-
-| `POST` | `/avaliar` |   Analisa uma URL e salva o resultado 
-
-| `GET`  | `/admin/dashboard` |   Métricas e dados agregados da empresa 
-
-| `GET`  | `/historico` |   Histórico de análises da empresa 
+**Protegidos** — exigem o header `Authorization: Bearer <token>`
+- `POST /avaliar` — analisa uma URL e salva o resultado
+- `GET /admin/dashboard` — métricas e dados agregados da empresa
+- `GET /historico` — histórico de análises da empresa
 
 ## Limitações conhecidas e próximos passos
 
@@ -128,4 +122,4 @@ Este é um projeto de estudo / prova de conceito. A análise é **heurística** 
 - Cookie `httpOnly` + refresh token no lugar do `localStorage`
 - Limpeza de parâmetros de tracking (UTM) das URLs salvas
 
-Feito por **Davi Oliveira** — [LinkedIn](https://www.linkedin.com/in/davi-oliveira-72a862351) · [Github](https://gitHub.com/davipdev)
+Feito por **Davi Oliveira** — [LinkedIn](https://www.linkedin.com/in/davi-oliveira-72a862351) · [GitHub](https://github.com/davipdev)
