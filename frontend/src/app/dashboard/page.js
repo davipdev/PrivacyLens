@@ -258,7 +258,7 @@ export default function DashboardPage() {
                 Visão geral
               </h1>
               <p className="mt-1 text-sm text-zinc-400">
-                Empresa PrivacyLens Labs
+                {dados.nomeEmpresa}
               </p>
             </div>
               <button

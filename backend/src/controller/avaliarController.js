@@ -113,6 +113,7 @@
             success: true,
             mensagem: `painel de admin ${admin}`,
             codigoEmpresa: empresa?.codigo,
+            nomeEmpresa: empresa?.nome,
             scoreGeral: scoregeral,
             metrica: {
                 total: totalconsultas,

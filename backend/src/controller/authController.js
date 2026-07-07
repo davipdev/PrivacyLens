@@ -37,7 +37,7 @@ export async function Acesso(request, reply) {
             else {
                 const codigoAle = `PK-${crypto.randomBytes(3).toString("hex").toUpperCase()}`
 
-                const nomefinalemp = nomeEmpresa || `tudo bem ${nome}?`
+                const nomefinalemp = nomeEmpresa || `empresa de ${nome}`
 
                 const novaempresa = await prisma.empresa.create({
                     data: {
